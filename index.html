@@ -5,35 +5,35 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            padding: 50px;
             text-align: center;
+            margin-top: 60px;
         }
         input, select, button {
             padding: 10px;
-            margin: 10px;
+            margin: 8px;
             font-size: 16px;
         }
         #result {
             margin-top: 20px;
-            font-size: 22px;
-            color: green;
+            font-size: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>AWS Lambda Calculator</h1>
 
-    <input type="number" id="num1" placeholder="Enter first number">
+    <h1>Simple Calculator (AWS Lambda + API Gateway)</h1>
+
+    <input type="number" id="num1" placeholder="Enter number 1">
+    <input type="number" id="num2" placeholder="Enter number 2">
+
     <select id="operation">
         <option value="add">+</option>
         <option value="subtract">-</option>
-        <option value="multiply">×</option>
-        <option value="divide">÷</option>
+        <option value="multiply">*</option>
+        <option value="divide">/</option>
     </select>
-    <input type="number" id="num2" placeholder="Enter second number">
 
-    <br>
     <button onclick="calculate()">Calculate</button>
 
     <div id="result"></div>
@@ -49,26 +49,24 @@
                 return;
             }
 
-            const apiUrl = "https://9nni27jwf0.execute-api.us-east-1.amazonaws.com/default/calc"
-                            + "?num1=" + num1
-                            + "&num2=" + num2
-                            + "&operation=" + operation;
+            const url = `https://9nni27jwf0.execute-api.us-east-1.amazonaws.com/default/calc?num1=${num1}&num2=${num2}&operation=${operation}`;
 
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById("result").innerHTML = "Result: " + data;
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    document.getElementById("result").innerHTML = "An error occurred. Check console.";
-                });
+            fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("result").innerHTML = data;
+            })
+            .catch(error => {
+                document.getElementById("result").innerHTML = error.message;
+                console.error('Error:', error);
+            });
         }
     </script>
+
 </body>
 </html>
